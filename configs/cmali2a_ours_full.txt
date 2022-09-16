@@ -1,0 +1,56 @@
+gpu_num = 1
+# Dataset related
+seed = 666
+expname = cmali2a_ours_full_embed91
+datadir = Z:\NeRFtx\data_mali2_a
+expdir  = ./log
+test_ids = 4
+factor = 8
+bd_factor = 0.85
+frm_num = -1  # use all the frames
+nerf_type = NeUVFModulateT
+
+# Logging related
+i_print = 1
+i_tensorboard = 2
+i_weights = 3
+i_testset = 4
+i_video = 5
+i_eval = 6
+
+# Training related
+batch_size = 16
+itertions_per_frm = 50
+lrate = 1e-3
+N_iters = 120000
+
+
+## About time and dynamics of base network
+time_embed_type = latent
+latent_size = 256
+
+## About the uv loss
+uv_loss_weight = 1
+uv_loss_decay = 10
+uv_batch_size = 1024
+
+# About texture MLP
+texture_type = fuse
+promote_fuse_texture_step = 30000
+rgb_activate = sigmoid
+## About time and dynamics of texture
+time_multires_window_end_for_tex = 80000  # windowed latent
+latent_size_for_tex = 192
+
+# Cycle loss
+cycle_loss_weight = 1
+cycle_loss_decay = 200
+latent_size_for_cycle = 192
+
+# Other losses
+alpha_loss_weight = 0.05
+
+# Towards geometry editing
+gsmooth_loss_weight = 0.3
+kpt_loss_weight = 0.05
+uvsmooth_loss_weight = 0.05

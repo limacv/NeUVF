@@ -6,7 +6,7 @@ import math
 import torch.nn as nn
 import time
 from NeRF import *
-
+from torch.utils.tensorboard import SummaryWriter
 from configs import config_parser
 from dataloader import load_data, load_images, load_masks, load_position_maps, has_matted, load_matted
 from utils import *
@@ -78,18 +78,6 @@ def train():
 
     # Summary writers
     writer = SummaryWriter(os.path.join(args.expdir, args.expname))
-
-    # Create log dir and copy the config file
-    file_path = os.path.join(args.expdir, args.expname, f"source_{datetime.now().timestamp():.0f}")
-    os.makedirs(file_path, exist_ok=True)
-    if args.config is not None:
-        f = os.path.join(file_path, 'config.txt')
-        with open(f, 'w') as file:
-            file.write(open(args.config, 'r').read())
-    files_copy = ['NeRF.py', 'NeRF_modules.py', 'train.py', 'WARP_modules.py',
-                  'utils.py', 'dataloader.py', 'configs.py', 'metrics.py']
-    for fc in files_copy:
-        shutil.copyfile(f"./{fc}", os.path.join(file_path, fc))
 
     # Create nerf model
     if args.nerf_type == 'NeRFModulateT':

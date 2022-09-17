@@ -68,6 +68,7 @@ if __name__ == "__main__":
     basenames = basenames[::period]
     uv_gt_id2t = np.arange(0, T, period)
     assert(len(uv_gt_id2t) == len(basenames))
+    t2uv_gt_id = np.repeat(np.arange(len(basenames)), period)[:T]
     print("load position maps")
     args.uv_gts = torch.rand(T, 36942, 5)
     args.t2uv_gt_id = np.arange(T)
@@ -101,6 +102,8 @@ if __name__ == "__main__":
     global_step = start
     suffix = ''
 
+    # ##################################################################################################
+    print("Scripting::Finish loading everything!!!")
     # deciding render view and range
     poses = torch.tensor(poses)
     intrinsics = torch.tensor(intrinsics)
@@ -203,8 +206,7 @@ if __name__ == "__main__":
                 rintrin[:2, :3] *= args.render_factor
                 rgbs, disps = nerf(rH, rW, chunk=args.render_chunk, t=render_time,
                                    poses=rpose[None, ...],
-                                   intrinsics=rintrin[None, ...],
-                                   render_kwargs=render_kwargs_test)
+                                   intrinsics=rintrin[None, ...])
                 rgbs = rgbs[0]
                 disps = disps[0]
                 rgbs = rgbs.cpu().numpy()

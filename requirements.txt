@@ -1,3 +1,4 @@
+# for training
 numpy
 scikit-image
 torch>=1.8
@@ -7,4 +8,8 @@ imageio-ffmpeg
 matplotlib
 configargparse
 opencv-python
+
+# for rendering and export meshes
 trimesh
+Pillow
+PyMCubes

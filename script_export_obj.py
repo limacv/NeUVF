@@ -5,7 +5,6 @@ import numpy as np
 import math
 import torch.nn as nn
 import time
-from tensorboardX import SummaryWriter
 from NeRF import *
 
 from configs import config_parser
@@ -42,16 +41,20 @@ if __name__ == "__main__":
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
+
     imgpaths, poses, intrinsics, bds, render_poses, render_intrinsics = load_data(datadir=args.datadir,
                                                                                   factor=args.factor,
                                                                                   bd_factor=args.bd_factor,
                                                                                   frm_num=args.frm_num)
+
     T = len(imgpaths)
     V = len(imgpaths[0])
     H, W = imageio.imread(imgpaths[0][0]).shape[0:2]
     print('Loaded llff', T, V, H, W, poses.shape, intrinsics.shape, render_poses.shape, render_intrinsics.shape,
           bds.shape)
     args.time_len = T
+    args.roibox = bds
+
     #######
     # load uv map
     uv_gts = None
@@ -61,14 +64,10 @@ if __name__ == "__main__":
     uv_gt_id2t = np.arange(0, T, period)
     assert (len(uv_gt_id2t) == len(basenames))
     t2uv_gt_id = np.repeat(np.arange(len(basenames)), period)[:T]
-    if args.uv_loss_weight > 0:
-        uv_gts = load_position_maps(args.datadir, args.factor, basenames)
-        uv_gts = torch.tensor(uv_gts).cuda()
-        # transform uv from (0, 1) to (- uv_map_face_roi,  uv_map_face_roi)
-        uv_gts[..., 3:] = uv_gts[..., 3:] * (2 * args.uv_map_face_roi) - args.uv_map_face_roi
+    print("load position maps")
+    args.uv_gts = torch.rand(T, 36942, 5)
+    args.t2uv_gt_id = np.arange(T)
 
-        args.uv_gts = uv_gts
-        args.t2uv_gt_id = t2uv_gt_id
     nerf = NeUVFModulateT(args)
     ##########################
     # Load checkpoints
@@ -84,35 +83,7 @@ if __name__ == "__main__":
 
         start = ckpt['global_step']
         smart_load_state_dict(nerf, ckpt)
-        if 'rot_raw' in ckpt.keys():
-            print("Loading poses and intrinsics from the ckpt")
-            rot_raw = ckpt['rot_raw']
-            tran_raw = ckpt['tran_raw']
-            intrin_raw = ckpt['intrin_raw']
-            poses, intrinsics = raw2poses(
-                torch.cat([rot_raw0, rot_raw]),
-                torch.cat([tran_raw0, tran_raw]),
-                torch.cat([intrin_raw0, intrin_raw]))
-            assert len(rot_raw) + 1 == V
-    render_kwargs_train = {
-        'N_samples': args.N_samples,
-        'N_importance': args.N_importance,
-        'use_viewdirs': args.use_viewdirs,
-        'perturb': args.perturb,
-        'raw_noise_std': args.raw_noise_std,
-    }
 
-    render_kwargs_test = {k: render_kwargs_train[k] for k in render_kwargs_train}
-    render_kwargs_test['perturb'] = False
-    render_kwargs_test['raw_noise_std'] = 0.
-
-    bds_dict = {
-        'box': bds
-    }
-    print(bds_dict)
-
-    render_kwargs_train.update(bds_dict)
-    render_kwargs_test.update(bds_dict)
     global_step = start
 
     # ##################################################################################################

@@ -24,20 +24,20 @@ itertions_per_frm = 50
 lrate = 1e-3
 N_iters = 120000
 
+latent_size = 256
 
 ## About time and dynamics of base network
 time_embed_type = latent
 latent_size = 256
 
 ## About the uv loss
+uv_batch_size = 1024
 uv_loss_weight = 1
 uv_loss_decay = 10
-uv_batch_size = 1024
 
 # About texture MLP
 texture_type = fuse
 promote_fuse_texture_step = 30000
-rgb_activate = sigmoid
 ## About time and dynamics of texture
 time_multires_window_end_for_tex = 80000  # windowed latent
 latent_size_for_tex = 192
@@ -49,6 +49,7 @@ latent_size_for_cycle = 192
 
 # Other losses
 alpha_loss_weight = 0.05
+alpha_loss_decay = 2000
 
 # Towards geometry editing
 gsmooth_loss_weight = 0.3

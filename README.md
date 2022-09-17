@@ -47,9 +47,11 @@ There are a bunch of configs (```--render_*```) that control the rendering proce
 
 ### 6. Exporting coarse mesh and texture for editing
 ```
-python script_export_obj.py --config <config_files> --t 0
+python script_export_obj.py --config <config_files> \
+  --render_canonical
 ```
 This will generate mesh and texture files in the ```<basedir>/<expname>/mesh```.
+We specify ```render_canonical``` since we want to extract canonical mesh
 
 ### 7. Running UI and simple edit
 The simple UI is based on PyOpenGL, glfw and PyImgui. 
@@ -61,8 +63,6 @@ python main.py
 ```
 In Windows, if you have python installed under PATH, just double click the main.py.
 This will open a window for editing and saving. 
-
-\# TODO: detail on the UI.
 
 ### 8. Rendering the edited NeRF
 After editing the texture or the geometry, one can render the edited representation

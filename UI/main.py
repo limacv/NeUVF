@@ -68,6 +68,7 @@ cpts_file_path = os.path.dirname(obj_file_path) + "/cpoint.npz"
 render_success = False
 render_success_time = 0
 
+
 def impl_glfw_init():
     width, height = 1280, 720
     window_name = "NeUVF editor"
@@ -127,7 +128,7 @@ def wheel_callback(window, dx, dy):
 
 def mouse_callback(window, button, action, mods):
     global mouse_is_moving_camera, click_pos, camera_pos, camera_tar, camera_up, \
-        click_camera_pos, click_camera_right, click_camera_up,\
+        click_camera_pos, click_camera_right, click_camera_up, \
         cpts, cpts_seleted_idx, mouse_is_moving_point, cpts_seleted_pos, camera_fx, camera_fy
 
     io = imgui.get_io()
@@ -154,7 +155,7 @@ def mouse_callback(window, button, action, mods):
 
             dist = np.linalg.norm(cpts_2d_screen - np.array([click_pos[0], click_pos[1]])[:, None], axis=0)
             cpts_seleted_idx = np.argmin(dist)
-            
+
             if render_control and dist[cpts_seleted_idx] < cpts_seleted_threshold * control_size:
                 mouse_is_moving_point = True
                 cpts_seleted_pos = cpts[cpts_seleted_idx].copy()
@@ -186,11 +187,11 @@ def cursor_pos_callback(window, xpos, ypos):
 
 def get_view_proj_mat():
     project_mat = glm.perspective(
-            glm.radians(camera_fov),
-            window_w / window_h if window_h > 0 else 0,
-            camera_near,
-            camera_far
-        )
+        glm.radians(camera_fov),
+        window_w / window_h if window_h > 0 else 0,
+        camera_near,
+        camera_far
+    )
     project_mat = np.array(project_mat).astype(np.float32)
     view_mat = glm.lookAt(camera_pos, camera_tar, camera_up)
     view_mat = np.array(view_mat).astype(np.float32)
@@ -228,7 +229,7 @@ def main():
 
     head_shader = load_shaders('shaders/vertex.glsl', 'shaders/frag.glsl')
     control_shader = load_shaders('shaders/cvertex.glsl', 'shaders/cfrag.glsl')
-    
+
     # anything about head
     global obj_file_path, texture_file_path, cpts_file_path
 
@@ -239,7 +240,7 @@ def main():
             filetypes=[('mesh file', '.obj')])
         working_dir = os.path.dirname(new_obj_file)
         obj_file_path = new_obj_file
-        texture_file_path = os.path.join(working_dir, "texture_map_rgb.png")
+        texture_file_path = os.path.join(working_dir, "texture.png")
         cpts_file_path = os.path.join(working_dir, "cpoint.npz")
         if os.path.exists(texture_file_path) and os.path.exists(cpts_file_path):
             break
@@ -273,7 +274,7 @@ def main():
     cpts = np.concatenate([cpts, np.ones_like(cpts[:, :1])], -1) @ transform_inv.T
     cpts = cpts[:, :3]
     set_uniform_mat4(head_shader, transform, "global_trans")
-    
+
     sphere = trimesh.creation.icosphere(subdivisions=2, radius=0.02, color=None)
     cverts = sphere.vertices.astype(np.float32)
     cfaces = sphere.faces.astype(np.int32)
@@ -375,7 +376,7 @@ def main():
                         texture = imageio.imread(new_texture_file)[..., :3]
                         set_texture2d(texture, texture_id)
                         texture_file_path = new_texture_file
-                
+
                 # changed, _ = imgui.input_text(
                 #     label="", value=obj_file_path, buffer_length=400
                 # )
@@ -424,7 +425,7 @@ def main():
                             set_uniform_v3f(control_shader, cpts, "controls")
                             cpts_isdirty = False
                             cpts_file_path = new_cpts_file
-                    
+
                 global render_success, render_success_time
                 imgui.text('')
                 imgui.text("Render")
@@ -443,26 +444,26 @@ def main():
                         sufix += 1
 
                     np.savez(savedir,
-                        frameidx=frame_idx,
-                        pose=pose,
-                        intrin=intrin,
-                        cpts=cpts
-                    )
+                             frameidx=frame_idx,
+                             pose=pose,
+                             intrin=intrin,
+                             cpts=cpts
+                             )
                     imageio.imwrite(imsavedir,
                                     texture)
-                    render_success=True
+                    render_success = True
                     render_success_time = time.time()
                 if render_success:
                     imgui.same_line()
                     imgui.text("Success!")
                 if time.time() - render_success_time > 1:
                     render_success = False
-                
+
                 if imgui.button(label='Launch Rendering'):
                     pass
-                
+
                 imgui.end()
-        
+
         if show_texture_map:
             if imgui.begin("Texture Maps", True):
                 global pen_size, pen_color, pen
@@ -470,7 +471,7 @@ def main():
                 x2, y2 = imgui.get_window_content_region_max()
                 ww, wh = x2 - x1, y2 - y1
                 sz = min(ww, wh)
-                
+
                 imgui.image_button(texture_id, sz, sz, frame_padding=0)  # clicked
                 if imgui.is_item_active():
                     cx, cy = glfw.get_cursor_pos(window)
@@ -480,7 +481,7 @@ def main():
                     x, y = (cx - wx) / sz, (cy - wy) / sz
                     tx, ty = texture.shape[:2]
                     x, y = int(x * (tx - 1)), int(y * (ty - 1))
-                    
+
                     # draw
                     x = np.clip(x, pen_size, tx - pen_size - 1)
                     y = np.clip(y, pen_size, ty - pen_size - 1)
@@ -488,7 +489,7 @@ def main():
                     edit = pen[..., :3] * 255 * pen[..., -1:] + original * (1 - pen[..., -1:])
                     edit = np.clip(edit, 0, 255).astype(np.uint8)
                     texture[y - pen_size: y + pen_size + 1, x - pen_size: x + pen_size + 1] = edit
-                    
+
                     update_texture2d(texture, texture_id, (0, 0))
 
                 changed1, pen_size = imgui.slider_int(
@@ -500,11 +501,12 @@ def main():
                 if changed1 or changed2 or pen is None:
                     psz = pen_size * 2 + 1
                     pen = np.ones((psz, psz, 4)).astype(np.float32) * pen_color
-                    radiusx, radiusy = np.meshgrid(np.arange(-pen_size, pen_size + 1), np.arange(-pen_size, pen_size + 1))
+                    radiusx, radiusy = np.meshgrid(np.arange(-pen_size, pen_size + 1),
+                                                   np.arange(-pen_size, pen_size + 1))
                     radius = radiusx ** 2 + radiusy ** 2
                     mask = radius <= pen_size ** 2
                     pen[..., -1] *= mask.astype(np.float32)
-                    
+
                 imgui.end()
 
         if show_metric_window:
@@ -521,7 +523,7 @@ def main():
         glEnable(GL_CULL_FACE)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        
+
         # update the view mat
         view_mat, project_mat = get_view_proj_mat()
         set_uniform_mat4(head_shader, view_mat, "view_matrix")
@@ -555,5 +557,6 @@ def main():
     impl.shutdown()
     glfw.terminate()
 
-if __name__ == '__main__': 
+
+if __name__ == '__main__':
     main()

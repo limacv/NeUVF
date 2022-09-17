@@ -1,9 +1,9 @@
 gpu_num = 1
 # Dataset related
 seed = 666
-expname = cmali2a_ours_full_embed91
-datadir = Z:\NeRFtx\data_mali2_a
-expdir  = ./log
+expname = mali_ours_full_embed91
+datadir = <data_root>/mali
+expdir  = <data_root>/log
 test_ids = 4
 factor = 8
 bd_factor = 0.85
@@ -11,27 +11,23 @@ frm_num = -1  # use all the frames
 nerf_type = NeUVFModulateT
 
 # Logging related
-i_print = 1
-i_tensorboard = 2
-i_weights = 3
-i_testset = 4
-i_video = 5
-i_eval = 6
+i_tensorboard = 300
+i_print = 1000
+i_weights = 30000
+i_testset = 30000
+i_video = 30000
+i_eval = 30000
 
 # Training related
-batch_size = 16
+batch_size = 6144
 itertions_per_frm = 50
 lrate = 1e-3
 N_iters = 120000
 
 latent_size = 256
 
-## About time and dynamics of base network
-time_embed_type = latent
-latent_size = 256
-
 ## About the uv loss
-uv_batch_size = 1024
+uv_batch_size = 10240
 uv_loss_weight = 1
 uv_loss_decay = 10
 

@@ -17,6 +17,7 @@ import cv2
 import mcubes
 import trimesh
 from PIL import Image
+from script_export_texture import export_texture_map
 
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -34,8 +35,8 @@ if __name__ == "__main__":
                         help='std dev of noise added to regularize sigma_a output, 1e0 recommended')
     parser.add_argument("--iso_value", type=float, default=5,
                         help='std dev of noise added to regularize sigma_a output, 1e0 recommended')
-    parser.add_argument("--texture", type=str, default="assets/checker.png",
-                        help='can be "rgb", <path_to_texture>')
+    parser.add_argument("--texresolution", type=int, default=1024,
+                        help='texture resolution')
 
     args = parser.parse_args()
     np.random.seed(args.seed)
@@ -94,13 +95,20 @@ if __name__ == "__main__":
     print("Scripting::saving objs")
     suffix = ""
     explicit_warp: WarpKptAdvanced = nerf.explicit_warp
-    if args.render_canonical:
-        print("Rendering canonical, setting explicit_warp to None")
-        suffix += "_canonical"
-        nerf.explicit_warp = None
-        bds = np.array([[-0.65, -1, -0.8], [0.65, 0.7, 0.45]])
+    assert args.render_canonical
+    print("Rendering canonical, setting explicit_warp to None")
+    suffix += "_canonical"
+    nerf.explicit_warp = None
+    bds = np.array([[-0.65, -1, -0.8], [0.65, 0.7, 0.45]])
 
     batch_size = args.batch_size * 4
+
+    print(f"Scripting::saving textures of time {args.t}")
+    with torch.no_grad():
+        bakeds, albedos, residuals = export_texture_map(nerf, args.texresolution, [args.t], poses)
+        print(f"albedo shape = {albedos[0].shape}")
+        texture = to8b(albedos[0].cpu().numpy())
+        imageio.imwrite(os.path.join(savedir, "texture.png"), texture)
 
     def mcube2nerf(xyz):
         orishape = xyz.shape
@@ -160,7 +168,7 @@ if __name__ == "__main__":
         # vertices_world = explicit_warp.inverse_forward(vertices_world, args.t)
 
         # Save
-        texture = Image.open(args.texture)
+        texture = Image.fromarray(texture)
         texture = trimesh.visual.TextureVisuals(
             uv=uvs.cpu().numpy(),
             image=texture

@@ -1,9 +1,9 @@
 gpu_num = 3
 # Dataset related
 seed = 7
-expname = cmali2a_hypernerf
-datadir = /apdcephfs/private_leema/data/NeRFtx/data_mali2_a
-expdir  = /apdcephfs/private_leema/data/NeRFtx/ablation
+expname = mali_hypernerf
+datadir = <data_root>/mali
+expdir  = <data_root>/log
 test_ids = 4
 factor = 8
 bd_factor = 0.85
@@ -23,13 +23,6 @@ batch_size = 6144
 itertions_per_frm = 50
 lrate = 1e-3
 N_iters = 120000
-
-# About base network
-N_samples = 64
-N_importance = 64
-multires_views = 3
-use_viewdirs = True
-use_two_models_for_fine = True
 
 # model specific parameters
 time_embed_type = latent

@@ -1,28 +1,28 @@
 gpu_num = 3
 # Dataset related
 seed = 7
-expname = cjujuc_nerfmodt
-datadir = /apdcephfs/private_leema/data/NeRFtx/data_cjuju_c
-expdir  = /apdcephfs/private_leema/data/NeRFtx/NeUVF
+expname = yuze_nerfmodt
+datadir = <data_root>/yuze
+expdir  = <data_root>/log
 test_ids = 4
 factor = 8
 bd_factor = 0.75
 frm_num = -1
 nerf_type = NeRFModulateT
 
-# Logging relatedX
-i_tensorboard = 20
-i_print = 20
-i_weights = 1500
-i_testset = 1000
-i_video = 1000
-i_eval = 3000
+# Logging related
+i_tensorboard = 300
+i_print = 1000
+i_weights = 30000
+i_testset = 30000
+i_video = 30000
+i_eval = 30000
 
 # Training related
 batch_size = 6144
 itertions_per_frm = 50
 lrate = 1e-3
-N_iters = 3000
+N_iters = 120000
 
 # model specific parameters
 latent_size = 256

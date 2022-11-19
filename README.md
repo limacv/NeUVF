@@ -1,5 +1,5 @@
-This is the official implementation of the paper [Neural Parameterization for Dynamic Human Head Editing](https://arxiv.org/abs/2207.00210)
-in this work we present a method for intuitively and consistently editing the geometry and appearance of a 3D human head. 
+This is the official implementation of the paper [Neural Parameterization for Dynamic Human Head Editing](https://arxiv.org/abs/2207.00210).
+In this work we present a method for intuitively and consistently editing the geometry and appearance of a 3D human head. The website can be found [here](https://limacv.github.io/neuvf_web/).
 
 ![](https://limacv.github.io/NeUVF/teasers/teaser.png)
 

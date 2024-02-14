@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ```
 
 ### 2. Download sample data
-Due to privacy issue, we could only provide two sample data. The data can be find [here](https://hkustconnect-my.sharepoint.com/:f:/g/personal/lmaag_connect_ust_hk/Ekair6aJL3JPpTqi3JpnrY8B1_5HblitKvfvxTSYWfTdLg?e=leP3Wp). 
+Due to privacy issue, we could only provide two sample data. The data can be find [here](https://drive.google.com/drive/folders/1W_xEq4mJgJOFsTl1Ra9DFMXrfTeeJwmJ?usp=sharing). 
 
 ### 3. Prepare config files
 We provide several config files in the ```config``` folder. 
